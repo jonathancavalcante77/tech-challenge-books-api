@@ -25,7 +25,7 @@ def carregar_dados_livros() -> List[Dict[str, Any]]:
         Lista de dicionarios contendo os dados dos livros.
         Se o arquivo nao existir, retorna uma lista vazia.
     """
-    # Monta o caminho completo do arquivo usando Path para compatibilidade (Vercel/Local)
+    # Monta o caminho completo do arquivo usando Path para compatibilidade
     base_dir = Path(__file__).resolve().parent.parent
     caminho_csv = base_dir / DATA_DIR / CSV_FILENAME
     

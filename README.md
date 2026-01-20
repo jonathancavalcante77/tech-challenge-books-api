@@ -1,66 +1,152 @@
-# Tech Challenge - Books API
+# Tech Challenge - Books API (Fase 1)
 
-Projeto referente à Fase 1 da Pós-Tech em Machine Learning Engineering (FIAP).
-O sistema consiste em um pipeline de dados com Web Scraping, armazenamento em CSV e uma API REST (FastAPI) para consulta e exposição de dados para modelos de Machine Learning.
+API REST para consulta e análise de livros extraídos via Web Scraping, desenvolvida como parte da Pós-Tech em Machine Learning Engineering da FIAP.
 
-## Arquitetura
+## 1. Visão Geral
 
-O fluxo de dados segue as etapas:
-1. **Scraping**: Extração de dados do site 'Books to Scrape'.
-2. **Armazenamento**: Persistência em arquivo CSV local.
-3. **API**: Carregamento dos dados em memória e exposição via endpoints REST.
-4. **Consumo**: Cliente final ou modelos de ML.
+Este projeto implementa um pipeline completo de dados:
+1.  **Coleta**: Script de scraping extrai dados de livros do site *Books to Scrape*.
+2.  **Processamento**: Dados estruturados e limpos são persistidos em CSV.
+3.  **API**: Interface REST (FastAPI) serve os dados, estatísticas e recursos para ML.
+4.  **Consumo**: Dados prontos para dashboards e treinamento de modelos.
 
-> **Nota:** O arquivo `data/books.csv` está incluído no repositório para facilitar a execução e o deploy. Para regenerar, execute `python scripts/scraper.py`.
+## 2. Arquitetura
 
-## Funcionalidades
+```mermaid
+graph LR
+    A[scripts/scraper.py] -->|Extrai dados| B(data/books.csv)
+    B -->|Carrega| C[api (FastAPI)]
+    C -->|JSON| D[Swagger UI]
+    C -->|JSON| E[scripts/smoke_test.py]
+    C -->|JSON| F[dashboard/app.py]
+    C -->|Features/CSV| G[Modelos ML]
+```
 
-- **Core**: Listagem de livros, busca por parâmetros, estatísticas agregadas.
-- **Autenticação**: Implementação de JWT (Login e Refresh) para proteção de rotas.
-- **Automação**: Endpoint para disparo do processo de scraping e recarga de dados em tempo real.
-- **Machine Learning**: Endpoints dedicados para fornecimento de features e dataset de treinamento.
+## 3. Estrutura do Repositório
 
-## Instalação e Execução
+```text
+/
+├── api/                # Código fonte da API (FastAPI)
+│   ├── main.py         # Entrypoint e definição de rotas
+│   └── models.py       # Modelos Pydantic (contratos)
+├── dashboard/          # Aplicação Streamlit (Visualização)
+├── data/               # Armazenamento de dados (books.csv)
+├── scripts/            # Scripts auxiliares (scraper, testes)
+├── requirements.txt    # Dependências do projeto
+└── README.md           # Documentação
+```
 
-Pré-requisitos: Python 3.9+
+## 4. Como Rodar Localmente
 
-1. Instalar dependências:
-   ```bash
-   pip install -r requirements.txt
-   ```
+### Instalação
 
-2. Executar a API:
-   ```bash
-   python -m uvicorn api.main:app --reload
-   ```
+Pré-requisitos: Python 3.9+.
 
-3. Acessar documentação (Swagger):
-   http://127.0.0.1:8000/docs
+1.  Clone o repositório e acesse a pasta.
+2.  (Opcional) Crie e ative um ambiente virtual:
+    ```bash
+    python -m venv venv
+    # Windows: venv\Scripts\activate
+    # Linux/Mac: source venv/bin/activate
+    ```
+3.  Instale as dependências:
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-## Autenticação
+### Execução
 
-Algumas rotas são protegidas e requerem token JWT.
+Inicie o servidor de desenvolvimento:
 
-1. **Obter Token**:
-   - Rota: `POST /api/v1/auth/login`
-   - Body: `{"username": "admin", "password": "secret"}`
+```bash
+uvicorn api.main:app --reload
+```
 
-2. **Utilizar Token**:
-   - Header: `Authorization: Bearer <token>`
+A API estará disponível em `http://127.0.0.1:8000`.
 
-## Endpoints Principais
+## 5. Deploy (Render)
 
-### Públicos
-- `GET /api/v1/books`: Listagem paginada.
-- `GET /api/v1/books/{id}`: Detalhes do livro.
-- `GET /api/v1/stats/overview`: Métricas gerais.
+A API está publicada e acessível publicamente:
 
-### Protegidos / ML
-- `POST /api/v1/scraping/trigger`: Executa scraping e atualiza base de dados.
-- `GET /api/v1/ml/features`: Dados formatados para inferência.
-- `GET /api/v1/ml/training-data`: Download do CSV completo.
-- `POST /api/v1/ml/predictions`: Simulação de inferência de modelo.
+-   **Base URL**: `https://tech-challenge-books-api-t9a4.onrender.com`
+-   **Documentação Interativa (Swagger)**: [https://tech-challenge-books-api-t9a4.onrender.com/docs](https://tech-challenge-books-api-t9a4.onrender.com/docs)
 
-## Deploy
+## 6. Endpoints
 
-O projeto possui configuração para Vercel (`vercel.json`).
+### Obrigatórios
+| Método | Rota | Descrição |
+| :--- | :--- | :--- |
+| `GET` | `/api/v1/books` | Lista livros (paginado). |
+| `GET` | `/api/v1/books/{id}` | Detalhes de um livro. |
+| `GET` | `/api/v1/books/search` | Busca por `title` e `category`. |
+| `GET` | `/api/v1/categories` | Lista de categorias. |
+| `GET` | `/api/v1/health` | Status da API. |
+
+### Bônus e Recursos Extras
+| Método | Rota | Descrição |
+| :--- | :--- | :--- |
+| `POST` | `/api/v1/auth/login` | Autenticação (JWT). |
+| `POST` | `/api/v1/auth/refresh` | Renovação de token. |
+| `POST` | `/api/v1/scraping/trigger` | **(Protegido)** Dispara atualização dos dados. |
+| `GET` | `/api/v1/stats/overview` | Métricas gerais. |
+| `GET` | `/api/v1/stats/categories` | Métricas por categoria. |
+| `GET` | `/api/v1/ml/features` | Dados formatados para ML. |
+| `GET` | `/api/v1/ml/training-data` | Download do dataset (CSV). |
+| `POST` | `/api/v1/ml/predictions` | Simulação de inferência. |
+
+### Exemplos de Chamadas (CURL)
+
+**1. Health Check:**
+```bash
+curl -s "https://tech-challenge-books-api-t9a4.onrender.com/api/v1/health"
+```
+
+**2. Listar Livros:**
+```bash
+curl -s "https://tech-challenge-books-api-t9a4.onrender.com/api/v1/books?page=1&size=5"
+```
+
+**3. Buscar Livros:**
+```bash
+curl -s "https://tech-challenge-books-api-t9a4.onrender.com/api/v1/books/search?title=travel"
+```
+
+**4. Categorias:**
+```bash
+curl -s "https://tech-challenge-books-api-t9a4.onrender.com/api/v1/categories"
+```
+
+**5. Login:**
+```bash
+curl -s -X POST "https://tech-challenge-books-api-t9a4.onrender.com/api/v1/auth/login" \
+  -H "Content-Type: application/json" \
+  -d "{\"username\":\"admin\",\"password\":\"admin\"}"
+```
+
+**6. Rota Protegida (Exemplo de uso do Token):**
+```bash
+# Substitua <TOKEN> pelo valor recebido no login
+curl -s -X POST "https://tech-challenge-books-api-t9a4.onrender.com/api/v1/scraping/trigger" \
+  -H "Authorization: Bearer <TOKEN>"
+```
+
+## 7. Autenticação (JWT)
+
+O sistema utiliza JSON Web Tokens para proteção de rotas administrativas.
+-   **Credenciais Padrão**: `admin` / `admin`
+-   **Fluxo**: Login -> Recebe Token -> Envia Token no Header `Authorization`.
+
+## 8. Scripts
+
+-   **Scraper**: `python scripts/scraper.py`
+    -   Extrai dados novos e atualiza `data/books.csv`.
+-   **Smoke Test**: `python scripts/smoke_test.py`
+    -   Valida os principais endpoints da API localmente.
+
+## 9. Vídeo
+
+A PREENCHER
+
+## 10. Licença
+
+Este projeto é de uso educacional.
