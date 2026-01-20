@@ -77,8 +77,8 @@ A API está publicada e acessível publicamente:
 | Método | Rota | Descrição |
 | :--- | :--- | :--- |
 | `GET` | `/api/v1/books` | Lista livros (paginado). |
-| `GET` | `/api/v1/books/{id}` | Detalhes de um livro. |
-| `GET` | `/api/v1/books/search` | Busca por `title` e `category`. |
+| `GET` | `/api/v1/books/{book_id}` | Detalhes de um livro (pelo ID numérico). |
+| `GET` | `/api/v1/books/search?title=&category=` | Busca por `title` e/ou `category`. |
 | `GET` | `/api/v1/categories` | Lista de categorias. |
 | `GET` | `/api/v1/health` | Status da API. |
 
@@ -149,4 +149,4 @@ A PREENCHER
 
 ## 10. Licença
 
-Este projeto é de uso educacional.
+Consulte o arquivo [LICENSE](./LICENSE) para mais detalhes.
