@@ -13,13 +13,13 @@ Este projeto implementa um pipeline completo de dados:
 ## 2. Arquitetura
 
 ```mermaid
-graph LR
-    A[scripts/scraper.py] -->|Extrai dados| B(data/books.csv)
-    B -->|Carrega| C[api (FastAPI)]
-    C -->|JSON| D[Swagger UI]
-    C -->|JSON| E[scripts/smoke_test.py]
-    C -->|JSON| F[dashboard/app.py]
-    C -->|Features/CSV| G[Modelos ML]
+flowchart LR
+  A[scripts/scraper.py] --> B[data/books.csv]
+  B --> C[FastAPI API]
+  C --> D[Swagger /docs]
+  C --> E[Smoke test]
+  C --> F[Dashboard]
+  C --> G[ML consumers]
 ```
 
 ## 3. Estrutura do Repositório
