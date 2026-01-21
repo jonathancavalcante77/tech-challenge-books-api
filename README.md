@@ -145,7 +145,7 @@ O sistema utiliza JSON Web Tokens para proteção de rotas administrativas.
 
 ## 9. Vídeo
 
-A PREENCHER
+Link: https://www.youtube.com/watch?v=rzJvtBiQo0A
 
 ## 10. Licença
 
